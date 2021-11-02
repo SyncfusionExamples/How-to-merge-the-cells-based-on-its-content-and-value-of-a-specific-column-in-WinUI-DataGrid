@@ -29,8 +29,8 @@ namespace SfDataGridDemo
         public MainWindow()
         {
             this.InitializeComponent();
-            this.sfDataGrid.ItemsSourceChanged += SfDataGrid_ItemsSourceChanged;
-            this.sfDataGrid.QueryCoveredRange += SfDataGrid_QueryCoveredRange;
+            this.sfDataGrid.ItemsSourceChanged += OnItemsSourceChanged;
+            this.sfDataGrid.QueryCoveredRange += OnQueryCoveredRange;
         }
 
 
@@ -43,7 +43,7 @@ namespace SfDataGridDemo
         /// <summary>
         /// ItemsSourceChanged event handler.
         /// </summary>
-        private void SfDataGrid_ItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs e)
+        private void OnItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs e)
         {
             if (sfDataGrid.View != null)
                 reflector = sfDataGrid.View.GetPropertyAccessProvider();
@@ -54,12 +54,12 @@ namespace SfDataGridDemo
         /// <summary>
         /// QueryCoveredRange event handler
         /// </summary>
-        private void SfDataGrid_QueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e)
+        private void OnQueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e)
         {
             CoveredCellInfo range = null;
 
             ////here apply merge the cell based on Columns
-            if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country" || e.GridColumn.MappingName == "Discount")
+            if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country" )
                 range = GetRange(e.GridColumn, e.RowColumnIndex.RowIndex, e.RowColumnIndex.ColumnIndex, e.Record);
 
             if (range == null)
@@ -89,7 +89,7 @@ namespace SfDataGridDemo
             var range = new CoveredCellInfo(columnIndex, columnIndex, rowIndex, rowIndex);
             object data = reflector.GetFormattedValue(rowData, column.MappingName);
 
-            //here get the Product value for checikng other cell value
+            //here get the Product value for checking  other cell value
             string productData = (rowData as ProductSalesDetails).Product;
 
             GridColumn leftColumn = null;
@@ -211,7 +211,7 @@ namespace SfDataGridDemo
                     break;
                 var compareData = reflector.GetFormattedValue((nextData as RecordEntry).Data, column.MappingName);
 
-                //get the next row data value of RigID
+                //get the next row data value of Product
                 string productNextData = ((nextData as RecordEntry).Data as ProductSalesDetails).Product;
 
                 if (compareData == null)

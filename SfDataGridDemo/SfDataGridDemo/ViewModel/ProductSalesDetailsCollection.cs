@@ -54,62 +54,19 @@ namespace SfDataGridDemo
         /// <returns></returns>
         public ObservableCollection<ProductSalesDetails> GetSalesInfo()
         {
-            /// Geography
-            string[] countries = new string[] { "Australia", "Canada", "France", "Germany", "United States" };
-            string[] ausStates = new string[] { "New South Wales", "Queensland", "South Australia", "Tasmania", "Victoria" };
-            string[] canadaStates = new string[] { "Alberta", "British Columbia", "Brunswick", "Manitoba", "Ontario", "Quebec" };
-            string[] franceStates = new string[] { "Charente-Maritime", "Essonne", "Garonne (Haute)", "Gers", };
-            string[] germanyStates = new string[] { "Bayern", "Brandenburg", "Hamburg", "Hessen", "Nordrhein-Westfalen", "Saarland" };
+            _productInfo = new ObservableCollection<ProductSalesDetails>();
+            _productInfo.Add(new ProductSalesDetails("Bike", "Germany", "Bayern", 9, 12, 25000));
+            _productInfo.Add(new ProductSalesDetails("Bike", "Germany", "Brandenburg", 8, 14, 36000));
+            _productInfo.Add(new ProductSalesDetails("Bike", "Germany", "Hamburg", 5, 8, 40040));
+            _productInfo.Add(new ProductSalesDetails("Car", "Germany", "Hessen", 3, 10, 10700));
+            _productInfo.Add(new ProductSalesDetails("Car", "Germany", "Bayern", 8, 13, 20300));
+            _productInfo.Add(new ProductSalesDetails("Truck", "Australia", "Queensland", 5, 7, 50700));
+            _productInfo.Add(new ProductSalesDetails("Van", "Canada", "Alberta", 6, 8, 80100));
+            _productInfo.Add(new ProductSalesDetails("BiCycle", "Canada", "Brunswick", 2, 6, 35000));
+            _productInfo.Add(new ProductSalesDetails("Car", "France", "Essonne", 4, 8, 20030));
+            _productInfo.Add(new ProductSalesDetails("Bike", "United States", "New York", 3, 7, 54000));
 
-            string[] ussStates = new string[] { "New York", "North Carolina", "Alabama", "California", "Colorado", "New Mexico", "South Carolina" };
-
-            /// Products
-            string[] products = new string[] { "Bike", "Car", "Truck", "Van", "BiCycle" };
-            Random r = new Random(0);
-
-            int numberOfRecords = 10;
-            ObservableCollection<ProductSalesDetails> listOfProductSales = new ObservableCollection<ProductSalesDetails>();
-            for (int i = 0; i < numberOfRecords; i++)
-            {
-                ProductSalesDetails sales = new ProductSalesDetails();
-                sales.Country = countries[r.Next(1, countries.GetLength(0))];
-                sales.Quantity = r.Next(1, 12);
-                sales.Discount = r.Next(1, 15);
-                sales.Amount = (30000 * sales.Quantity);
-                sales.Product = products[r.Next(r.Next(products.GetLength(0) + 1))];
-                switch (sales.Country)
-                {
-                    case "Australia":
-                        {
-                            sales.State = ausStates[r.Next(ausStates.GetLength(0))];
-                            break;
-                        }
-                    case "Canada":
-                        {
-                            sales.State = canadaStates[r.Next(canadaStates.GetLength(0))];
-                            break;
-                        }
-                    case "France":
-                        {
-                            sales.State = franceStates[r.Next(franceStates.GetLength(0))];
-                            break;
-                        }
-                    case "Germany":
-                        {
-                            sales.State = germanyStates[r.Next(germanyStates.GetLength(0))];
-                            break;
-                        }
-                    case "United States":
-                        {
-                            sales.State = ussStates[r.Next(ussStates.GetLength(0))];
-                            break;
-                        }
-                }
-
-                listOfProductSales.Add(sales);
-            }
-
-            return listOfProductSales;
+            return _productInfo;
         }
     }
 }

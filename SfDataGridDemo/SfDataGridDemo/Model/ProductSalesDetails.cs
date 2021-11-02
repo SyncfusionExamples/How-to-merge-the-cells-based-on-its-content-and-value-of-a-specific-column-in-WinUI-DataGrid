@@ -149,5 +149,16 @@ namespace SfDataGridDemo
             if (PropertyChanged != null)
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public ProductSalesDetails(string product, string country, string state,int quantity,double discount,double amount)
+        {
+            this.Product = product;
+            this.Country = country;
+            this.State = state;
+            this.Quantity = quantity;
+            this.Discount = discount;
+            this.Amount = amount;
+
+        }
     }
 }
