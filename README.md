@@ -4,12 +4,12 @@
 
 This example describes how to merge the cells based on its content and value of a specific column in WinUI DataGrid.
 
-[WinUI DataGrid](https://www.syncfusion.com/winui-controls/datagrid) (SfDataGrid) does not provide the direct support to merge the cells based on the content and value of a specific column. You can merge the cells based on the content and value of a specific column by customizing the **GetRange** method and [QueryCoveredRange](https://help.syncfusion.com/cr/winui/Syncfusion.UI.Xaml.DataGrid.SfDataGrid.html#Syncfusion_UI_Xaml_DataGrid_SfDataGrid_QueryCoveredRange) event in DataGrid.
+[WinUI DataGrid](https://www.syncfusion.com/winui-controls/datagrid) (SfDataGrid) allows to merge the cells based on the content and value of a specific column in the same row by customizing the **GetRange** method and [QueryCoveredRange](https://help.syncfusion.com/cr/winui/Syncfusion.UI.Xaml.DataGrid.SfDataGrid.html#Syncfusion_UI_Xaml_DataGrid_SfDataGrid_QueryCoveredRange) event in DataGrid.
 
 ``` C#
 
-this.sfDataGrid.ItemsSourceChanged += SfDataGrid_ItemsSourceChanged;
-this.sfDataGrid.QueryCoveredRange += SfDataGrid_QueryCoveredRange;
+this.sfDataGrid.ItemsSourceChanged += OnItemsSourceChanged;
+this.sfDataGrid.QueryCoveredRange += OnQueryCoveredRange;
 
 /// <summary>
 /// Reflector for SfDataGrid’s data.
@@ -19,7 +19,7 @@ IPropertyAccessProvider reflector = null;
 /// <summary>
 /// ItemsSourceChanged event handler.
 /// </summary>
-private void SfDataGrid_ItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs e)
+private void OnItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs e)
 {
             if (sfDataGrid.View != null)
                 reflector = sfDataGrid.View.GetPropertyAccessProvider();
@@ -30,12 +30,12 @@ private void SfDataGrid_ItemsSourceChanged(object sender, GridItemsSourceChanged
 /// <summary>
 /// QueryCoveredRange event handler
 /// </summary>
-private void SfDataGrid_QueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e)
+private void OnQueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e)
 {
             CoveredCellInfo range = null;
 
             ////here apply merge the cell based on Columns
-            if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country" || e.GridColumn.MappingName == "Discount")
+            if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country" )
                 range = GetRange(e.GridColumn, e.RowColumnIndex.RowIndex, e.RowColumnIndex.ColumnIndex, e.Record);
 
             if (range == null)
@@ -65,7 +65,7 @@ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnInde
             var range = new CoveredCellInfo(columnIndex, columnIndex, rowIndex, rowIndex);
             object data = reflector.GetFormattedValue(rowData, column.MappingName);
 
-            //here get the Product value for checikng other cell value
+            //here get the Product value for checking other cell value
             string productData = (rowData as ProductSalesDetails).Product;
 
             GridColumn leftColumn = null;
@@ -78,7 +78,7 @@ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnInde
 
             // Merge Horizontally
 
-            // compare right column               
+            // compare right column
             for (int i = sfDataGrid.Columns.IndexOf(column); i < this.sfDataGrid.Columns.Count - 1; i++)
             {
                 var compareData = reflector.GetFormattedValue(rowData, sfDataGrid.Columns[i + 1].MappingName);
@@ -128,7 +128,7 @@ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnInde
             int nextRowIndex = -1;
             object previousData = null;
 
-            // Get previous row data.                
+            // Get previous row data.
             var startIndex = sfDataGrid.ResolveStartIndexBasedOnPosition();
 
             for (int i = rowIndex - 1; i >= startIndex; i--)
@@ -187,7 +187,7 @@ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnInde
                     break;
                 var compareData = reflector.GetFormattedValue((nextData as RecordEntry).Data, column.MappingName);
 
-                //get the next row data value of RigID
+                //get the next row data value of Product
                 string productNextData = ((nextData as RecordEntry).Data as ProductSalesDetails).Product;
 
                 if (compareData == null)
@@ -217,8 +217,6 @@ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnInde
 }
 
 ```
-
-![Shows the merged cells based on its content and value of a specific column in SfDataGrid](MergecellbasedonContent.gif)
 
 The following screenshot shows the merged cells in DataGrid,
 
