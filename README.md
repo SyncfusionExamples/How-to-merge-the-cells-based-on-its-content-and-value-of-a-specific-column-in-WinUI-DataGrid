@@ -21,10 +21,10 @@ IPropertyAccessProvider reflector = null;
 /// </summary>
 private void OnItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs e)
 {
-            if (sfDataGrid.View != null)
-                reflector = sfDataGrid.View.GetPropertyAccessProvider();
-            else
-                reflector = null;
+    if (sfDataGrid.View != null)
+        reflector = sfDataGrid.View.GetPropertyAccessProvider();
+    else
+        reflector = null;
 }
 
 /// <summary>
@@ -32,23 +32,23 @@ private void OnItemsSourceChanged(object sender, GridItemsSourceChangedEventArgs
 /// </summary>
 private void OnQueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e)
 {
-            CoveredCellInfo range = null;
+    CoveredCellInfo range = null;
 
-            ////here apply merge the cell based on Columns
-            if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country" )
-                range = GetRange(e.GridColumn, e.RowColumnIndex.RowIndex, e.RowColumnIndex.ColumnIndex, e.Record);
+    ////here apply merge the cell based on Columns
+    if (e.GridColumn.MappingName == "Product" || e.GridColumn.MappingName == "Country")
+        range = GetRange(e.GridColumn, e.RowColumnIndex.RowIndex, e.RowColumnIndex.ColumnIndex, e.Record);
 
-            if (range == null)
-                return;
+    if (range == null)
+        return;
 
-            // You can know that the range is already exist in Covered Cells by IsInRange method.
-            if (!sfDataGrid.CoveredCells.IsInRange(range))
-            {
-                e.Range = range;
-                e.Handled = true;
-            }
+    // You can know that the range is already exist in Covered Cells by IsInRange method.
+    if (!sfDataGrid.CoveredCells.IsInRange(range))
+    {
+        e.Range = range;
+        e.Handled = true;
+    }
 
-            //If the calculated range is already exist in CoveredCells, you can get the range using SfDataGrid.GetConflictRange (CoveredCellInfo coveredCellInfo) extension method.
+    //If the calculated range is already exist in CoveredCells, you can get the range using SfDataGrid.GetConflictRange (CoveredCellInfo coveredCellInfo) extension method.
 }
 
 /// <summary>
@@ -60,162 +60,161 @@ private void OnQueryCoveredRange(object sender, GridQueryCoveredRangeEventArgs e
 /// <param name="rowData"></param>
 /// <returns> Compares the adjacent cell value and returns the range </returns>
 /// <remark> If the method find that the adjacent values are equal by horizontal then it will merge vertically. And vice versa</remarks>
-private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnIndex, object rowData)
-{
-            var range = new CoveredCellInfo(columnIndex, columnIndex, rowIndex, rowIndex);
-            object data = reflector.GetFormattedValue(rowData, column.MappingName);
+ private CoveredCellInfo GetRange(GridColumn column, int rowIndex, int columnIndex, object rowData)
+ {
+     var range = new CoveredCellInfo(columnIndex, columnIndex, rowIndex, rowIndex);
+     object data = reflector.GetFormattedValue(rowData, column.MappingName);
 
-            //here get the Product value for checking other cell value
-            string productData = (rowData as ProductSalesDetails).Product;
+     //here get the Product value for checking other cell value
+     string productData = (rowData as ProductSalesDetails).Product;
 
-            GridColumn leftColumn = null;
-            GridColumn rightColumn = null;
+     GridColumn leftColumn = null;
+     GridColumn rightColumn = null;
 
-            // total rows count.
-            int recordsCount = this.sfDataGrid.GroupColumnDescriptions.Count != 0 ?
-            (this.sfDataGrid.View.TopLevelGroup.DisplayElements.Count + this.sfDataGrid.TableSummaryRows.Count + this.sfDataGrid.UnboundRows.Count + (this.sfDataGrid.AddNewRowPosition == AddNewRowPosition.Top ? +1 : 0)) :
-            (this.sfDataGrid.View.Records.Count + this.sfDataGrid.TableSummaryRows.Count + this.sfDataGrid.UnboundRows.Count + (this.sfDataGrid.AddNewRowPosition == AddNewRowPosition.Top ? +1 : 0));
+     // total rows count.
+     int recordsCount = this.sfDataGrid.GroupColumnDescriptions.Count != 0 ?
+     (this.sfDataGrid.View.TopLevelGroup.DisplayElements.Count + this.sfDataGrid.TableSummaryRows.Count + this.sfDataGrid.UnboundRows.Count + (this.sfDataGrid.AddNewRowPosition == AddNewRowPosition.Top ? +1 : 0)) :
+     (this.sfDataGrid.View.Records.Count + this.sfDataGrid.TableSummaryRows.Count + this.sfDataGrid.UnboundRows.Count + (this.sfDataGrid.AddNewRowPosition == AddNewRowPosition.Top ? +1 : 0));
 
-            // Merge Horizontally
+     // Merge Horizontally
 
-            // compare right column
-            for (int i = sfDataGrid.Columns.IndexOf(column); i < this.sfDataGrid.Columns.Count - 1; i++)
-            {
-                var compareData = reflector.GetFormattedValue(rowData, sfDataGrid.Columns[i + 1].MappingName);
+     // compare right column
+     for (int i = sfDataGrid.Columns.IndexOf(column); i < this.sfDataGrid.Columns.Count - 1; i++)
+     {
+         var compareData = reflector.GetFormattedValue(rowData, sfDataGrid.Columns[i + 1].MappingName);
 
-                if (compareData == null)
-                    break;
+         if (compareData == null)
+             break;
 
-                if (!compareData.Equals(data))
-                    break;
-                rightColumn = sfDataGrid.Columns[i + 1];
-            }
+         if (!compareData.Equals(data))
+             break;
+         rightColumn = sfDataGrid.Columns[i + 1];
+     }
 
-            // compare left column.
-            for (int i = sfDataGrid.Columns.IndexOf(column); i > 0; i--)
-            {
-                var compareData = reflector.GetFormattedValue(rowData, sfDataGrid.Columns[i - 1].MappingName);
+     // compare left column.
+     for (int i = sfDataGrid.Columns.IndexOf(column); i > 0; i--)
+     {
+         var compareData = reflector.GetFormattedValue(rowData, sfDataGrid.Columns[i - 1].MappingName);
 
-                if (compareData == null)
-                    break;
+         if (compareData == null)
+             break;
 
-                if (!compareData.Equals(data))
-                    break;
-                leftColumn = sfDataGrid.Columns[i - 1];
-            }
+         if (!compareData.Equals(data))
+             break;
+         leftColumn = sfDataGrid.Columns[i - 1];
+     }
 
-            if (leftColumn != null || rightColumn != null)
-            {
+     if (leftColumn != null || rightColumn != null)
+     {
 
-                // set left index
-                if (leftColumn != null)
-                {
-                    var leftColumnIndex = this.sfDataGrid.ResolveToScrollColumnIndex(this.sfDataGrid.Columns.IndexOf(leftColumn));
-                    range = new CoveredCellInfo(leftColumnIndex, range.Right, range.Top, range.Bottom);
-                }
+         // set left index
+         if (leftColumn != null)
+         {
+             var leftColumnIndex = this.sfDataGrid.ResolveToScrollColumnIndex(this.sfDataGrid.Columns.IndexOf(leftColumn));
+             range = new CoveredCellInfo(leftColumnIndex, range.Right, range.Top, range.Bottom);
+         }
 
-                // set right index
-                if (rightColumn != null)
-                {
-                    var rightColumnIndex = this.sfDataGrid.ResolveToScrollColumnIndex(this.sfDataGrid.Columns.IndexOf(rightColumn));
-                    range = new CoveredCellInfo(range.Left, rightColumnIndex, range.Top, range.Bottom);
-                }
-                return range;
-            }
+         // set right index
+         if (rightColumn != null)
+         {
+             var rightColumnIndex = this.sfDataGrid.ResolveToScrollColumnIndex(this.sfDataGrid.Columns.IndexOf(rightColumn));
+             range = new CoveredCellInfo(range.Left, rightColumnIndex, range.Top, range.Bottom);
+         }
+         return range;
+     }
 
-            // Merge Vertically from the row index.
-            int previousRowIndex = -1;
-            int nextRowIndex = -1;
-            object previousData = null;
+     // Merge Vertically from the row index.
+     int previousRowIndex = -1;
+     int nextRowIndex = -1;
+     object previousData = null;
 
-            // Get previous row data.
-            var startIndex = sfDataGrid.ResolveStartIndexBasedOnPosition();
+     // Get previous row data.
+     var startIndex = sfDataGrid.ResolveStartIndexBasedOnPosition();
 
-            for (int i = rowIndex - 1; i >= startIndex; i--)
-            {
-                var recordIndex = this.sfDataGrid.ResolveToRecordIndex(i);
-                if (this.sfDataGrid.View.GroupDescriptions.Count > 0)
-                {
-                    previousData = this.sfDataGrid.View.TopLevelGroup.DisplayElements[recordIndex];
-                }
-                else
-                {
-                    var recordCount = this.sfDataGrid.View.Records.Count;
-                    previousData = (recordCount > 0 && recordIndex >= 0 && recordIndex < recordCount)
-                               ? sfDataGrid.View.Records[recordIndex]
-                               : null;
-                }
+     for (int i = rowIndex - 1; i >= startIndex; i--)
+     {
+         var recordIndex = this.sfDataGrid.ResolveToRecordIndex(i);
+         if (this.sfDataGrid.View.GroupDescriptions.Count > 0)
+         {
+             previousData = this.sfDataGrid.View.TopLevelGroup.DisplayElements[recordIndex];
+         }
+         else
+         {
+             var recordCount = this.sfDataGrid.View.Records.Count;
+             previousData = (recordCount > 0 && recordIndex >= 0 && recordIndex < recordCount)
+                        ? sfDataGrid.View.Records[recordIndex]
+                        : null;
+         }
 
-                if (previousData == null || !(previousData as NodeEntry).IsRecords)
-                    break;
-                var compareData = reflector.GetFormattedValue((previousData as RecordEntry).Data, column.MappingName);
+         if (previousData == null || !(previousData as NodeEntry).IsRecords)
+             break;
+         var compareData = reflector.GetFormattedValue((previousData as RecordEntry).Data, column.MappingName);
 
-                //get the previous row data value of Product
-                string productPreviousData = ((previousData as RecordEntry).Data as ProductSalesDetails).Product;
+         //get the previous row data value of Product
+         string productPreviousData = ((previousData as RecordEntry).Data as ProductSalesDetails).Product;
 
-                if (compareData == null)
-                    break;
+         if (compareData == null)
+             break;
 
-                if (!compareData.Equals(data))
-                    break;
+         if (!compareData.Equals(data))
+             break;
 
-                //here check the value
-                if (!productData.Equals(productPreviousData))
-                    break;
+         //here check the value
+         if (!productData.Equals(productPreviousData))
+             break;
 
-                previousRowIndex = i;
-            }
+         previousRowIndex = i;
+     }
 
-            // get next row data.
-            object nextData = null;
-            for (int i = rowIndex + 1; i < recordsCount + 1; i++)
-            {
-                var recordIndex = this.sfDataGrid.ResolveToRecordIndex(i);
-                if (this.sfDataGrid.View.GroupDescriptions.Count > 0)
-                {
-                    nextData = this.sfDataGrid.View.TopLevelGroup.DisplayElements[recordIndex];
-                }
-                else
-                {
-                    var recordCount = this.sfDataGrid.View.Records.Count;
-                    nextData = (recordCount > 0 && recordIndex >= 0 && recordIndex < recordCount)
-                               ? sfDataGrid.View.Records[recordIndex]
-                               : null;
-                }
+     // get next row data.
+     object nextData = null;
+     for (int i = rowIndex + 1; i < recordsCount + 1; i++)
+     {
+         var recordIndex = this.sfDataGrid.ResolveToRecordIndex(i);
+         if (this.sfDataGrid.View.GroupDescriptions.Count > 0)
+         {
+             nextData = this.sfDataGrid.View.TopLevelGroup.DisplayElements[recordIndex];
+         }
+         else
+         {
+             var recordCount = this.sfDataGrid.View.Records.Count;
+             nextData = (recordCount > 0 && recordIndex >= 0 && recordIndex < recordCount)
+                        ? sfDataGrid.View.Records[recordIndex]
+                        : null;
+         }
 
-                if (nextData == null || !(nextData as NodeEntry).IsRecords)
-                    break;
-                var compareData = reflector.GetFormattedValue((nextData as RecordEntry).Data, column.MappingName);
+         if (nextData == null || !(nextData as NodeEntry).IsRecords)
+             break;
+         var compareData = reflector.GetFormattedValue((nextData as RecordEntry).Data, column.MappingName);
 
-                //get the next row data value of Product
-                string productNextData = ((nextData as RecordEntry).Data as ProductSalesDetails).Product;
+         //get the next row data value of Product
+         string productNextData = ((nextData as RecordEntry).Data as ProductSalesDetails).Product;
 
-                if (compareData == null)
-                    break;
+         if (compareData == null)
+             break;
 
-                if (!compareData.Equals(data))
-                    break;
+         if (!compareData.Equals(data))
+             break;
 
-                //here check the value
-                if (!productData.Equals(productNextData))
-                    break;
+         //here check the value
+         if (!productData.Equals(productNextData))
+             break;
 
-                nextRowIndex = i;
-            }
+         nextRowIndex = i;
+     }
 
-            if (previousRowIndex != -1 || nextRowIndex != -1)
-            {
+     if (previousRowIndex != -1 || nextRowIndex != -1)
+     {
 
-                if (previousRowIndex != -1)
-                    range = new CoveredCellInfo(range.Left, range.Right, previousRowIndex, range.Bottom);
+         if (previousRowIndex != -1)
+             range = new CoveredCellInfo(range.Left, range.Right, previousRowIndex, range.Bottom);
 
-                if (nextRowIndex != -1)
-                    range = new CoveredCellInfo(range.Left, range.Right, range.Top, nextRowIndex);
-                return range;
-            }
-            return null;
-}
-
+         if (nextRowIndex != -1)
+             range = new CoveredCellInfo(range.Left, range.Right, range.Top, nextRowIndex);
+         return range;
+     }
+     return null;
+ }
 ```
 
 The following screenshot shows the merged cells in DataGrid,
